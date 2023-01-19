@@ -1,5 +1,4 @@
 import React from "react";
-import uuid from 'react-uuid';
 import { Link } from "react-router-dom";
 // import ProfileImage from "../images/profile.jpg";
 
@@ -7,7 +6,7 @@ import { Link } from "react-router-dom";
 const ContactCard = (props) => {
     const { id, name, email } = props.contact;
     return (
-        <div className="item" key={uuid()}>
+        <div className="item">
             <i className="user circle big middle aligned icon"></i>
             {/* <img className="user circle big middle aligned icon" style={{ width: '50px' }} src={ProfileImage} alt="ProfileImage" /> */}
             <div className="content">
@@ -16,7 +15,12 @@ const ContactCard = (props) => {
                     <small>{email}</small>
                 </Link>
             </div>
-            <i className="trash middle icon middle aligned" style={{ color: 'red' }} onClick={() => { props.clickHandller(id) }}></i>
+            <div className="ui tiny image">
+                <div className="ui icon buttons">
+                    <button className="ui button basic" onClick={() => { props.clickHandller(id) }}><i className="trash icon red"></i></button>
+                    <Link className="ui button basic" to={{ pathname: `/edit/${id}`, state: { contact: props.contact } }}><i className="edit icon blue"></i></Link>
+                </div>
+            </div>
         </div>
     );
 }

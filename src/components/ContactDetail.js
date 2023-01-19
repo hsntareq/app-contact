@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from 'react-router-dom';
+import api from "../api/contacts";
 import ProfileImage from "../images/profile.jpg";
 
 const ContactDetail = (props) => {
+    console.log(props);
     const { id } = useParams();
     const [contact, setContact] = useState(null);
 
+    const retriveContactsApi = async () => {
+        const response = await api.get('/contacts');
+        return response.data;
+    }
+
     useEffect(() => {
-        let contentDetail = JSON.parse(localStorage.getItem('contacts')).filter((item) => item.id === id);
-        setContact(contentDetail[0] && contentDetail[0]);
+        (async function () {
+            const allContacts = await retriveContactsApi();
+            let contentDetail = allContacts.filter((item) => item.id === id);
+            setContact(contentDetail[0] && contentDetail[0]);
+        })();
     }, [id]);
 
     return (

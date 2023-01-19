@@ -10,6 +10,7 @@ class AddContact extends React.Component {
             alert('all fields should have data.');
             return;
         }
+
         this.props.addContactHandller(this.state);
         this.setState({ name: '', email: '' });
         this.props.navigate('/');

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import uuid from 'react-uuid';
+import api from "../api/contacts";
 
 import './App.css';
 import Header from "./Header";
 import AddContact from "./AddContact";
+import EditContact from "./EditContact";
 import ContactList from "./ContactList";
 import ContactDetail from "./ContactDetail";
 
@@ -13,11 +15,32 @@ function App() {
   const retriveContacts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
   const [contacts, setContacts] = useState(retriveContacts ?? []);
 
-  const addContactHandller = (contact) => {
-    setContacts([...contacts, { id: uuid(), ...contact }]);
+  const retriveContactsApi = async () => {
+    const response = await api.get('/contacts');
+    return response.data;
   }
 
-  const removeContactHandller = (id) => {
+  const addContactHandller = async (contact) => {
+    const request = {
+      id: uuid(),
+      ...contact
+    }
+    const response = await api.post('/contacts', request);
+    setContacts([...contacts, response.data]);
+  }
+
+  const updateContactHandller = async (contact) => {
+    const response = await api.put(`/contacts/${contact.id}`, contact);
+    const { id } = response.data;
+    setContacts(
+      contacts.map(contact => {
+        return contact.id === id ? { ...response.data } : contact;
+      })
+    );
+  }
+
+  const removeContactHandller = async (id) => {
+    await api.delete(`/contacts/${id}`);
     const newContactList = contacts.filter(contact => {
       return contact.id !== id;
     })
@@ -25,14 +48,14 @@ function App() {
   }
 
   useEffect(() => {
-    const retriveContacts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-    if (retriveContacts) {
-      setContacts(retriveContacts);
-    }
+    (async function () {
+      const allContacts = await retriveContactsApi();
+      if (allContacts) setContacts(allContacts);
+    })();
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(contacts));
+    // localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(contacts));
   }, [contacts]);
 
   return (
@@ -42,6 +65,7 @@ function App() {
         <div className='ui container'>
           <Routes>
             <Route path='/add' element={<AddContact addContactHandller={addContactHandller} />} />
+            <Route path='/edit/:id' element={<EditContact updateContactHandller={updateContactHandller} />} />
             <Route path='/' element={<ContactList contacts={contacts} getContactId={removeContactHandller} />} />
             <Route path='/contact/:id' element={<ContactDetail />} />
           </Routes>
