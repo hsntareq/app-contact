@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useRef } from "react";
 import ContactCard from "./ContactCard";
 import { Link } from "react-router-dom";
 
 const ContactList = (props) => {
+    const inputEl = useRef('');
     const deleteContactHandller = (id) => {
         props.getContactId(id);
     }
@@ -12,6 +13,10 @@ const ContactList = (props) => {
             <ContactCard contact={contact} clickHandller={deleteContactHandller} key={contact.id}></ContactCard>
         );
     })
+    const getSearchTerm = () => {
+        props.searchKeyword(inputEl.current.value);
+    }
+
     return (
         <div className="main">
 
@@ -27,8 +32,14 @@ const ContactList = (props) => {
                 </div>
             </div>
             <div className="ui divider"></div>
+            <div className="ui search">
+                <div className="ui fluid big icon input">
+                    <input ref={inputEl} type="text" placeholder="Search a very wide input.." value={props.term} onChange={getSearchTerm} />
+                    <i className="search icon"></i>
+                </div>
+            </div>
             <div className="ui relaxed divided celled list big">
-                {renderContactList}
+                {renderContactList.length > 0 ? renderContactList : 'No contacts available'}
             </div>
 
         </div>

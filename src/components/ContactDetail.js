@@ -4,7 +4,6 @@ import api from "../api/contacts";
 import ProfileImage from "../images/profile.jpg";
 
 const ContactDetail = (props) => {
-    console.log(props);
     const { id } = useParams();
     const [contact, setContact] = useState(null);
 

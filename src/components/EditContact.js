@@ -44,7 +44,7 @@ class EditContact extends React.Component {
             alert('all fields should have data.');
             return;
         }
-        console.log(this.props);
+
         this.props.updateContactHandller(this.state);
         this.setState({ name: '', email: '' });
         this.props.navigate('/');
